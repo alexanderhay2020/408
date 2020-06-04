@@ -332,4 +332,157 @@ fprintf('h_τ: \t%.0f\n', h_tau);
 fprintf('\n');
 fprintf('Histograms do not approach a normal distribution.\n');
 fprintf('α does because it was pinned to max amplitude and outliers removed.\n');
-fprintf('(ie. the data was trimmed to be a normal distribution)\n');
+fprintf('(ie. the data was trimmed to fit a normal distribution)\n');
+
+%% Problem 3
+% ***********************************************
+% 3a
+
+fprintf('\n');
+fprintf('Problem 3a *****************************\n');
+fprintf('\n');
+
+load('HW3_FMRI_data.mat');
+
+voxels_mean = mean(voxels_faceImage);
+
+figure3a = figure;
+scatter(voxels_baseline,voxels_mean,'DisplayName','Sample');
+hold on;
+plot([0:1200],'DisplayName','1:1 reference line');
+title('3a - face voxel baseline vs mean');
+xlabel('Voxel baseline');
+ylabel('Voxel mean');
+xlim([-50 1200]);
+ylim([-50 1200]);
+legend('Location','northwest');
+hold off;
+
+fprintf('see figure 3a\n');
+fprintf('\n');
+fprintf('Voxel response initially appears distributed.\n');
+fprintf('Most, if not all, appear to respond to the image.\n');
+fprintf('But this depends what defines a response (ie. magnitude).\n');
+
+% ***********************************************
+% 3b
+
+fprintf('\n');
+fprintf('Problem 3b *****************************\n');
+fprintf('\n');
+
+voxels_test = voxels_faceImage(1:3,:);
+
+% h_test_1 = chi2gof(voxels_test(1,:));
+% h_test_2 = chi2gof(voxels_test(2,:));
+% h_test_3 = chi2gof(voxels_test(3,:));
+
+tt2_12 = ttest2(voxels_test(1,:),voxels_test(2,:));
+tt2_13 = ttest2(voxels_test(1,:),voxels_test(3,:));
+tt2_23 = ttest2(voxels_test(2,:),voxels_test(3,:));
+
+fprintf('Two-sample t-test for samples 1 & 2: %.0f\n',tt2_12);
+fprintf('Two-sample t-test for samples 1 & 3: %.0f\n',tt2_13);
+fprintf('Two-sample t-test for samples 2 & 3: %.0f\n',tt2_23);
+
+fprintf('Samples tested reject the hypothesis that the samples came from\n');
+fprintf('distributions with different means.\n');
+
+% ***********************************************
+% 3c
+
+fprintf('\n');
+fprintf('Problem 3c *****************************\n');
+fprintf('\n');
+
+fprintf('Im going to use the fitdist function to fit the data to a normal.\n');
+fprintf('distribution, then a ttest with α=0.05. The two-sample t-test\n');
+fprintf('results provide a good foundation for this test.\n');
+
+% ***********************************************
+% 3d
+
+fprintf('\n');
+fprintf('Problem 3d *****************************\n');
+fprintf('\n');
+
+voxels_gaus = fitdist(voxels_mean','Normal');
+
+% voxels_ttest = zeros(50,2);
+
+for i = 1:1000
+    [h p] = ttest(voxels_faceImage(:,i),voxels_gaus.mu,'Alpha',0.05);
+    voxels_ttest(i,1) = h;
+    voxels_ttest(i,2) = p;
+end
+
+figure3d = figure;
+
+semilogy(voxels_ttest(:,2));
+hold on;
+semiline = [0:1000, 0.05];
+plot(semiline);
+title('3d - p value semilogy α=0.05');
+xlabel('voxel');
+ylabel('p-value');
+xlim([0 1000]);
+hold off;
+
+fprintf('see figure 3d\n');
+
+% ***********************************************
+% 3e
+
+fprintf('\n');
+fprintf('Problem 3e *****************************\n');
+fprintf('\n');
+
+fprintf('Not at all. I dont think my math is off but I think I used the wrong test.\n');
+
+% ***********************************************
+% 3f
+
+fprintf('\n');
+fprintf('Problem 3f *****************************\n');
+fprintf('\n');
+
+for i = 1:1000
+    [h p] = ttest(voxels_faceImage(:,i),voxels_gaus.mu,'Alpha',(0.05/1000));
+    voxels_ttest(i,1) = h;
+    voxels_ttest(i,2) = p;
+end
+
+figure3f = figure;
+
+semilogy(voxels_ttest(:,2));
+hold on;
+semiline = [0:1000, (0.05/1000)];
+plot(semiline);
+title('3f - p value semilogy α=0.05/1000');
+xlabel('voxel');
+ylabel('p-value');
+xlim([0 1000]);
+hold off;
+
+fprintf('see figure 3f\n');
+fprintf('Same results as 3d, strengthening the suspicion that I used the wrong test.\n');
+
+% ***********************************************
+% 3g
+
+fprintf('\n');
+fprintf('Problem 3g *****************************\n');
+fprintf('\n');
+
+fprintf('N/A\n');
+
+fprintf('\n');
+fprintf('Notes *****************************\n');
+fprintf('\n');
+fprintf('I understand the format of this assignment. It was walking through\n');
+fprintf('how we would use these tools IRL. I got stuck on 2c for awhile, more\n');
+fprintf('of a coding issue than conceptual, but I worked through it. However,\n');
+fprintf('once I started working through question 3 I felt like I needed more\n');
+fprintf('...something. So far this class has been a lot on how to do the math\n');
+fprintf('and this was the first problem to test why we do the math. This would\n');
+fprintf('be nice to work through in class.\n');
