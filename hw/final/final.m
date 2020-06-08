@@ -15,7 +15,7 @@ fprintf('Homework 6\n');
 fprintf('Problem Set 1\n');
 fprintf('\n');
 
-fprintf('1a\n');
+fprintf('1a ********** \n');
 fprintf('Having too many parameters to fit the data may reintroduce noise into the data youre trying to filter.\n');
 fprintf('Too many parameters may also make it difficult to visualize any data clusters.\n');
 fprintf('\n');
@@ -29,7 +29,7 @@ fprintf('\n');
 % ***********************************************
 % 1d
 
-fprintf('1d\n');
+fprintf('1d ********** \n');
 fprintf('Standard deviation measures the variation of the data.\n');
 fprintf('Standard error measures how far the sample mean is from the true mean.\n');
 fprintf('\n');
@@ -37,7 +37,7 @@ fprintf('\n');
 % ***********************************************
 % 1e
 
-fprintf('1e\n');
+fprintf('1e ********** \n');
 fprintf('Assumption 1a: Data is a normal distribution\n');
 fprintf('Counter scenario: flu disproportionally affects children and elderly, creating two population means\n');
 fprintf('\n');
@@ -57,13 +57,14 @@ fprintf('\n');
 % ***********************************************
 % 1f
 
-fprintf('1f\n');
-fprintf('95% confidence interval means that there is 95 certainty that the range of values contain the true mean\n');
+fprintf('1f ********** \n');
+fprintf('95%% confidence interval means that there is 95%% certainty that the range of values contain the true mean\n');
 fprintf('\n');
+% fprintf('\n');
 % ***********************************************
 % 1g
 
-fprintf('1g\n');
+fprintf('1g ********** \n');
 fprintf('p-values indicate the strength of the evidence against the null-hypothesis. A p-value of 0.05 shows a 5% probability\n');
 fprintf('that the null hypothesis is correct\n');
 fprintf('\n');
@@ -471,6 +472,7 @@ fprintf('6a ********** \n');
 fprintf('\n');
 fprintf('The Nyquist frequency is %0.f Hz\n',fs/2);
 fprintf('Theres a peak at 54 Hz, which seems appropriate\n');
+fprintf('\n');
 
 %% **********************************************
 % 6b
@@ -536,9 +538,9 @@ fprintf('see figure 6b\n');
 
 T = 0.005;  % period
 fs = 1/T;   % Sample Freq
-timeaxis = 0:1/fs:((fs*T)-1)/fs;
 window = -50:50;
 window_length = length(window);
+timeAxis_waveform = 1E3*window*T;
 
 count = 0;
 
@@ -561,16 +563,114 @@ for i = 1:40
     
     spikeWaveform_mean = mean(spikeWaveformMatrix, 1);
     spikeWaveform_sem = std(spikeWaveformMatrix, [], 1) ./ sqrt(n);
-    timeAxis_waveform = 1E3*window*T;
     errorbar(timeAxis_waveform, spikeWaveform_mean, spikeWaveform_sem);
 
 end
 
 xlabel('Time from peak (ms)');
 ylabel('Average Current (pA)');
-title('Average spike waveform for large peaks');
+title('Figure 6c - Average spike waveform for large peaks');
 hold off;
 
 fprintf('6c ********** \n');
 fprintf('\n');
+fprintf('see figure 6c\n');
+fprintf('\n');
 fprintf('In 40 trials there were %0.f events\n',count);
+fprintf('\n');
+
+%% **********************************************
+% 6d
+
+% use trial 13, had a good spike, not too big.
+
+min_peak_height = 12;
+% min_peak_prom = 2600;
+
+[pks,locs] = findpeaks(data_filt_b(1:5000,13),'MinPeakHeight',min_peak_height);%,'MinPeakProminence',min_peak_prom);
+n = length(pks);
+spikeWaveformMatrix = zeros(n, window_length);
+
+for j=1:n
+    % window buffer
+    if (locs(j) > 51) && (locs(j) < 4950)
+        spikeWaveformMatrix(j,:) = data_filt_b(locs(j)+window);
+        count = count + 1;
+    end
+end
+
+spikeWaveform_mean = mean(spikeWaveformMatrix, 1);
+spikeWaveform_Filter = spikeWaveform_mean./sum(spikeWaveform_mean);
+dataMatrix_match_filtered = filtfilt(spikeWaveform_Filter, 1, dataMatrix);
+
+min_peak_height = 280;
+min_peak_prom = 550;
+
+figure_6d = figure;
+subplot(1,3,1,'Parent',figure_6d);
+findpeaks(dataMatrix_match_filtered(1:5000,13),'MinPeakHeight',min_peak_height);
+hold on;
+title('Figure 6d - MinPeakHeight (9.5)');
+xlabel('Time (ms)');
+ylabel('Amperage (pA)');
+
+subplot(1,3,2,'Parent',figure_6d);
+findpeaks(dataMatrix_match_filtered(1:5000,13),'MinPeakProminence',min_peak_prom);
+hold on;
+title('Figure 6d - MinPeakProminence (18)');
+xlabel('Time (ms)');
+ylabel('Amperage (pA)');
+
+subplot(1,3,3,'Parent',figure_6d);
+findpeaks(dataMatrix_match_filtered(1:5000,13),'MinPeakHeight',min_peak_height,'MinPeakProminence',min_peak_prom);
+hold on;
+title('Figure 6d - Parameters Tuned Together');
+xlabel('Time (ms)');
+ylabel('Amperage (pA)');
+
+fprintf('6d ********** \n');
+fprintf('\n');
+fprintf('see figure 6d\n');
+fprintf('\n');
+fprintf('For this trial, a MinPeakHeight of 1200 seemed reasonable. It captured\n');
+fprintf('spikes without clipping true spikes off. Likewise, a MinPeakProminence\n');
+fprintf('of 2600 seemed to separate larger spikes from just spiky noise.\n'); 
+
+%% **********************************************
+% 6e
+
+count = 0;
+% min_peak_height = 1200;
+% min_peak_prom = 2600;
+
+figure_6e = figure;
+hold on;
+for i = 1:40
+    
+    [pks,locs] = findpeaks(dataMatrix_match_filtered(1:5000,i),'MinPeakHeight',min_peak_height,'MinPeakProminence',min_peak_prom);
+    
+    pks_tot = pks_tot + length(pks);
+    n = length(pks);
+    spikeWaveformMatrix = zeros(n, window_length);
+
+    for j=1:n
+        % window buffer
+        if (locs(j) > 51) && (locs(j) < 4950)
+            spikeWaveformMatrix(j,:) = dataMatrix_match_filtered(locs(j)+window);
+            count = count + 1;
+        end
+    end
+    
+    spikeWaveform_mean = mean(spikeWaveformMatrix, 1);
+    spikeWaveform_sem = std(spikeWaveformMatrix, [], 1) ./ sqrt(n);
+    errorbar(timeAxis_waveform, spikeWaveform_mean, spikeWaveform_sem);
+
+end
+
+
+fprintf('6e ********** \n');
+fprintf('\n');
+fprintf('see figure 6e\n');
+fprintf('\n');
+fprintf('In 40 trials there were %0.f events\n',count);
+fprintf('\n');
