@@ -6,7 +6,7 @@ fprintf('Alexander Hay\n');
 fprintf('NUIN 408\n');
 fprintf('Homework 6\n');
 
-% α σ μ ≠ 
+% α λ σ μ ≠ 
 
 %% Problem Set 1
 % ***********************************************
@@ -433,6 +433,119 @@ fprintf('to noise.\n');
 fprintf('ie. climate vs weather\n');
 fprintf('\n');
 
+%% Problem Set 5
+% ***********************************************
+% 5a
+
+fprintf('5a ********** \n');
+
+% I just learned that this is a thing..
+fprintf(['1) Threshold image\n',...
+'\tValue: 1160\n',...
+'\n',...
+'2) Watershed image\n',...
+'3) Analyze Image\n',...
+'\tSize: 10-infinity\n',...
+'\tCircularity: 0.00-1.00\n',...
+'\t[x]Display Results\n',...
+'\t[x]Summarize\n',...
+'\t[x]Add to Manager\n',...
+'\t[x]Exclude Edges\n',...
+'\n',...
+'Number of Cells: 112\n',...
+'\n']);
+
+%% **********************************************
+% 5b
+
+fprintf('5b ********** \n');
+fprintf(['\n',...
+'see 5b.csv and 5b.png\n',...
+'\n']);
+
+%% **********************************************
+% 5c
+
+% #, Area, Mean, Min, Max, X, Y
+data_sacs = readtable('5b.csv','HeaderLines',1);
+data_sacs = table2array(data_sacs);
+
+mean_sacs = mean(data_sacs(:,2));
+sigma_sacs = std(data_sacs(:,2));
+
+jb_result = jbtest(data_sacs(:,2));
+
+fprintf('5c ********** \n');
+fprintf(['\n',...
+'The cells on the edge do not count towards a valid area estimate.\n',...
+'Being cut off, they dont represent their true shape.\n',...
+'\n',...
+'Mean Area (microns):\t%.2f\n',...
+'Std Dev (microns):\t%.2f\n',...
+'\n',...
+'Jarque-Bera Test tests normality of a dataset.\n',...
+'Result:\t%.0f\n',...
+'The test rejects the hypothesis that the data is normally distributed.\n'],...
+mean_sacs,sigma_sacs,jb_result);
+fprintf('\n');
+
+%% **********************************************
+% 5d
+
+X = [data_sacs(:,6) data_sacs(:,7)];
+
+for i = 1:length(data_sacs)
+    % The nearest neighbor of each point is itself
+    % The 2nd nearest neighbor is the closest point that isn't itself
+    
+    Y = [data_sacs(i,6) data_sacs(i,7)];
+    [idx(i,:), d(i,:)] = knnsearch(X, Y, 'K', 2);
+end
+
+figure_5d = figure;
+subplot(1,2,1,'Parent',figure_5d);
+histogram(d(:,2));
+title('5d - Nearest Neighbor Distance');
+xlabel('Distance (microns)');
+ylabel('Number of Cells');
+
+% This plots the centroid of each cell and points to its nearest neighbor
+% Double arrows incate that both points are each other's nearest neighbor
+X = [data_sacs(:,6), data_sacs(:,7)];
+[i d]=knnsearch(X,X,'K',2);
+i = i(:,2);
+
+subplot(1,2,2,'Parent',figure_5d);
+plot(X(:,1), X(:,2), 'b.','MarkerSize', 15,'DisplayName','Cell Centroid');
+hold on;
+quiver(X(:,1)', X(:,2)', X(i,1)' - X(:,1)', X(i,2)' - X(:,2)', 0, 'k','DisplayName','Nearest Neighbor');
+title('Cells Nearest Neighbors');
+xlabel('Position (microns)');
+ylabel('Position (microns)');
+legend;
+hold off;
+
+co_var = std(d(:,2))/mean(d(:,2));
+
+fprintf('5d ********** \n');
+fprintf(['\n',...
+'see figure 5d\n',...
+'\n',...
+'Coefficient of Variation:\t%.2f\n'],co_var);
+
+%% **********************************************
+% 5e
+
+co_var = mean(d(:,2))^(-1/2);
+
+fprintf('5e ********** \n');
+fprintf(['\n',...
+'This sort of spatial (cellular) development follows a Poisson distribution.\n',...
+'The coefficient of variation is defined as λ^(-1/2). If we define λ to be the\n',...
+'the mean of the distance, the coefficient of variation is %.2f, very close to\n',...
+'the coefficient found in part d. This suggests the default assumption was wrong.\n'],co_var);
+
+
 %% Problem Set 6
 % ***********************************************
 % 6a
@@ -469,6 +582,8 @@ ylabel('|P1(f)|');
 legend('Location','bestoutside');
 
 fprintf('6a ********** \n');
+fprintf('\n');
+fprintf('see figure 6a\n');
 fprintf('\n');
 fprintf('The Nyquist frequency is %0.f Hz\n',fs/2);
 fprintf('Theres a peak at 54 Hz, which seems appropriate\n');
@@ -541,12 +656,13 @@ fs = 1/T;   % Sample Freq
 window = -50:50;
 window_length = length(window);
 timeAxis_waveform = 1E3*window*T;
+trials = 40;
 
 count = 0;
 
 figure_6c = figure;
 hold on;
-for i = 1:40
+for i = 1:trials
     
     % Get the mean and s.e.m. of the spikeWaveformMatrix and plot them
     [pks,locs] = findpeaks(data_filt_b(1:5000,i),'MinPeakHeight',10);
@@ -576,53 +692,56 @@ fprintf('6c ********** \n');
 fprintf('\n');
 fprintf('see figure 6c\n');
 fprintf('\n');
-fprintf('In 40 trials there were %0.f events\n',count);
+fprintf('In %0.0f trials there were %0.f events\n',trials,count);
 fprintf('\n');
 
 %% **********************************************
 % 6d
 
-% use trial 13, had a good spike, not too big.
+% used trial 1, had a good spike, not too big.
 
-min_peak_height = 12;
-% min_peak_prom = 2600;
+trial = 1;
+min_peak_height = 1.2;
+min_peak_prom = 1.5;
+count2 = 0;
 
-[pks,locs] = findpeaks(data_filt_b(1:5000,13),'MinPeakHeight',min_peak_height);%,'MinPeakProminence',min_peak_prom);
-n = length(pks);
+dataTrace = -dataMatrix(:,trial);
+[pks,locs] = findpeaks(dataTrace,'MinPeakHeight',min_peak_height,'MinPeakProminence',min_peak_prom);
+n = length(locs);
 spikeWaveformMatrix = zeros(n, window_length);
 
-for j=1:n
+for i=1:n
     % window buffer
-    if (locs(j) > 51) && (locs(j) < 4950)
-        spikeWaveformMatrix(j,:) = data_filt_b(locs(j)+window);
-        count = count + 1;
+    if (locs(i) > 51) && (locs(i) < 4950)
+        spikeWaveformMatrix(i,:) = dataTrace(locs(i)+window);
+        count2 = count2 + 1;
     end
 end
 
 spikeWaveform_mean = mean(spikeWaveformMatrix, 1);
 spikeWaveform_Filter = spikeWaveform_mean./sum(spikeWaveform_mean);
-dataMatrix_match_filtered = filtfilt(spikeWaveform_Filter, 1, dataMatrix);
+dataTrace_matchFiltered = filtfilt(spikeWaveform_Filter, 1, dataMatrix);
 
-min_peak_height = 280;
-min_peak_prom = 550;
+% min_peak_height = 1;
+% min_peak_prom = .5;
 
 figure_6d = figure;
 subplot(1,3,1,'Parent',figure_6d);
-findpeaks(dataMatrix_match_filtered(1:5000,13),'MinPeakHeight',min_peak_height);
+findpeaks(dataTrace_matchFiltered(1:5000,trial),'MinPeakHeight',min_peak_height);
 hold on;
-title('Figure 6d - MinPeakHeight (9.5)');
+title('Figure 6d - MinPeakHeight (1.5)');
 xlabel('Time (ms)');
 ylabel('Amperage (pA)');
 
 subplot(1,3,2,'Parent',figure_6d);
-findpeaks(dataMatrix_match_filtered(1:5000,13),'MinPeakProminence',min_peak_prom);
+findpeaks(dataTrace_matchFiltered(1:5000,trial),'MinPeakProminence',min_peak_prom);
 hold on;
-title('Figure 6d - MinPeakProminence (18)');
+title('Figure 6d - MinPeakProminence (0.5)');
 xlabel('Time (ms)');
 ylabel('Amperage (pA)');
 
 subplot(1,3,3,'Parent',figure_6d);
-findpeaks(dataMatrix_match_filtered(1:5000,13),'MinPeakHeight',min_peak_height,'MinPeakProminence',min_peak_prom);
+findpeaks(dataTrace_matchFiltered(1:5000,trial),'MinPeakHeight',min_peak_height,'MinPeakProminence',min_peak_prom);
 hold on;
 title('Figure 6d - Parameters Tuned Together');
 xlabel('Time (ms)');
@@ -632,32 +751,32 @@ fprintf('6d ********** \n');
 fprintf('\n');
 fprintf('see figure 6d\n');
 fprintf('\n');
-fprintf('For this trial, a MinPeakHeight of 1200 seemed reasonable. It captured\n');
-fprintf('spikes without clipping true spikes off. Likewise, a MinPeakProminence\n');
-fprintf('of 2600 seemed to separate larger spikes from just spiky noise.\n'); 
+fprintf('For this trial, a MinPeakHeight of %0.1f seemed reasonable. It captured\n',min_peak_height);
+fprintf('significant spikes above some of the noise. Likewise, a MinPeakProminence\n');
+fprintf('of %0.1f filtered smaller local spikes from the greater signal spike.\n',min_peak_prom); 
+fprintf('\n');
 
 %% **********************************************
 % 6e
 
-count = 0;
-% min_peak_height = 1200;
-% min_peak_prom = 2600;
+pks_tot = 0;
+min_peak_height = 1;
+min_peak_prom = 0.2;
 
 figure_6e = figure;
 hold on;
-for i = 1:40
+for i = 1:trials
     
-    [pks,locs] = findpeaks(dataMatrix_match_filtered(1:5000,i),'MinPeakHeight',min_peak_height,'MinPeakProminence',min_peak_prom);
+    [pks,locs] = findpeaks(dataTrace_matchFiltered(1:5000,i),'MinPeakHeight',min_peak_height,'MinPeakProminence',min_peak_prom);
     
-    pks_tot = pks_tot + length(pks);
     n = length(pks);
     spikeWaveformMatrix = zeros(n, window_length);
 
     for j=1:n
         % window buffer
         if (locs(j) > 51) && (locs(j) < 4950)
-            spikeWaveformMatrix(j,:) = dataMatrix_match_filtered(locs(j)+window);
-            count = count + 1;
+            spikeWaveformMatrix(j,:) = dataTrace_matchFiltered(locs(j)+window);
+            pks_tot = pks_tot + 1;
         end
     end
     
@@ -672,5 +791,7 @@ fprintf('6e ********** \n');
 fprintf('\n');
 fprintf('see figure 6e\n');
 fprintf('\n');
-fprintf('In 40 trials there were %0.f events\n',count);
-fprintf('\n');
+fprintf(['In %0.0f trials there were %0.f events. In part c there were %0.f events\n',...
+'See figures 6c and 6e to compare the plots. Figure 6c is noisy and erratic,\n',...
+'an indication that peak heights arent a good way of filtering the signal.\n',...
+'Figure 6e shows clearer signal traces for each trial.\n'],trials,pks_tot,count);
