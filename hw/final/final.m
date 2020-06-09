@@ -1,10 +1,10 @@
 % Alexander Hay
-% Homework 6
+% Final
 
 fprintf('\n');
 fprintf('Alexander Hay\n');
 fprintf('NUIN 408\n');
-fprintf('Homework 6\n');
+fprintf('Final\n');
 
 % α λ σ μ ≠ 
 
@@ -12,7 +12,7 @@ fprintf('Homework 6\n');
 % ***********************************************
 % 1a
 
-fprintf('Problem Set 1\n');
+fprintf('********** Problem Set 1 **********\n');
 fprintf('\n');
 
 fprintf('1a ********** \n');
@@ -23,8 +23,19 @@ fprintf('\n');
 % ***********************************************
 % 1b
 
+fprintf('1b ********** \n');
+fprintf(['With the residuals you can calculate the coefficient of determination.\n',...
+'That tells you how much variance is explained by your model.\n',...
+'\n']);
 % ***********************************************
 % 1c
+
+fprintf('1c ********** \n');
+fprintf(['Binary Random Variable: An action potential crossing (or not\n',...
+'\tcrossing) the excitation threshold\n',...
+'Discrete Random Variable: Population of cells\n',...
+'Continuous Random Variable: Cell voltage\n',...
+'\n']);
 
 % ***********************************************
 % 1d
@@ -34,16 +45,17 @@ fprintf('Standard deviation measures the variation of the data.\n');
 fprintf('Standard error measures how far the sample mean is from the true mean.\n');
 fprintf('\n');
 
+
 % ***********************************************
 % 1e
 
 fprintf('1e ********** \n');
 fprintf('Assumption 1a: Data is a normal distribution\n');
 fprintf('Counter scenario: flu disproportionally affects children and elderly, creating two population means\n');
+fprintf('Test: Jarque-Bera test\n');
 fprintf('\n');
 fprintf('Assumption 1b: Reasonably large population (there enough data to plot a normal distribution)\n');
 fprintf('Counter scenario: Sample size of one from a population of one\n');
-fprintf('Test: Jarque-Bera test\n');
 fprintf('\n');
 fprintf('Assumption 2: Populations tested have the same variance\n');
 fprintf('Counter scenario: Men and women have same average intelligence, men have more vairance in intelligence than women\n');
@@ -60,7 +72,7 @@ fprintf('\n');
 fprintf('1f ********** \n');
 fprintf('95%% confidence interval means that there is 95%% certainty that the range of values contain the true mean\n');
 fprintf('\n');
-% fprintf('\n');
+
 % ***********************************************
 % 1g
 
@@ -72,6 +84,9 @@ fprintf('\n');
 %% Problem Set 2
 % ***********************************************
 % 2a
+fprintf('\n');
+fprintf('********** Problem Set 2 **********\n');
+fprintf('\n');
 
 rat = linspace(1,15,15);
 lo_anx = [3,6,3,7,7,2,3,5,8,10,2,5,7,8,11];
@@ -154,7 +169,7 @@ fprintf('\n');
 % 2g
 
 fprintf('2g ********** \n');
-fprintf('Statistical power:\t\t%.2f\n',sampsizepwr('t2',[mean_lo_anx std_lo_anx],mean_hi_anx,[],n));
+fprintf('Statistical power:\t%.2f\n',sampsizepwr('t2',[mean_lo_anx std_lo_anx],mean_hi_anx,[],n));
 fprintf('Rats needed for power of 0.95:\t%.f\n',sampsizepwr('t2',[mean_lo_anx std_lo_anx],mean_hi_anx,.95,[]));
 fprintf('Statistical power is the likelihood of the test rejecting the hypothesis\n');
 fprintf('A power of 0.95 demonstrates a 95%% confidence of rejecting the null hypothesis\n');
@@ -173,6 +188,10 @@ fprintf('\t\teliminates variations between rats\n');
 % ***********************************************
 % 3a
 
+fprintf('\n');
+fprintf('********** Problem Set 3 **********\n');
+fprintf('\n');
+
 % Protein rate
 P_a = 0.75;
 P_b = 0.20;
@@ -189,15 +208,20 @@ P_y = (P_a * P_ma) + (P_b * P_mb) + (P_c * P_mc);
 % Prob misfold from B
 P_yb = (P_b * P_mb)/P_y;
 
-fprintf('2h ********** \n');
+fprintf('3 ********** \n');
 fprintf('Probability that the source of misfolding came from population B:\n');
 fprintf('%2.2f %%\n',P_yb*100);
 fprintf('\n');
 fprintf('See code for work\n');
+fprintf('\n');
 
 %% Problem Set 4
 % ***********************************************
 % 4a
+
+fprintf('\n');
+fprintf('********** Problem Set 4 **********\n');
+fprintf('\n');
 
 % coefficient of variation = σ/μ
 
@@ -319,7 +343,7 @@ for i = 1:20
         
 end
 
-title('Figure 4e - simulated p values');
+title('Figure 4e - Simulated p Values');
 ylabel('p values');
 xlabel('time (ms)');
 ylabel('p values');
@@ -335,6 +359,7 @@ se_sim= std(sim)/sqrt(length(sim));
 
 fprintf('4e ********** \n');
 fprintf('see figure 4e\n');
+fprintf('\n');
 fprintf('Latency Mean:\t%.2f ms\n', mean_sim);
 fprintf('Latency Error:\t %.2f ms\n', se_sim);
 fprintf('\n');
@@ -363,7 +388,7 @@ end
 mean_sim_rev = mean(sim);
 se_sim_rev= std(sim)/sqrt(length(sim));
 
-title('Figure 4f - simulated p values (1sec window)');
+title('Figure 4f - Simulated p Values (1sec window)');
 ylabel('p values');
 xlabel('time (ms)');
 ylabel('p values');
@@ -395,7 +420,7 @@ end
 mean_sim_rev_long = mean(sim);
 se_sim_rev_long = std(sim)/sqrt(length(sim));
 
-title('Figure 4fa - simulated p values (1.5sec window)');
+title('Figure 4f - Simulated p Values (1.5sec window)');
 ylabel('p values');
 xlabel('time (ms)');
 ylabel('p values');
@@ -436,6 +461,10 @@ fprintf('\n');
 %% Problem Set 5
 % ***********************************************
 % 5a
+
+fprintf('\n');
+fprintf('********** Problem Set 5 **********\n');
+fprintf('\n');
 
 fprintf('5a ********** \n');
 
@@ -532,6 +561,7 @@ fprintf(['\n',...
 'see figure 5d\n',...
 '\n',...
 'Coefficient of Variation:\t%.2f\n'],co_var);
+fprintf('\n');
 
 %% **********************************************
 % 5e
@@ -544,11 +574,15 @@ fprintf(['\n',...
 'The coefficient of variation is defined as λ^(-1/2). If we define λ to be the\n',...
 'the mean of the distance, the coefficient of variation is %.2f, very close to\n',...
 'the coefficient found in part d. This suggests the default assumption was wrong.\n'],co_var);
-
+fprintf('\n');
 
 %% Problem Set 6
 % ***********************************************
 % 6a
+
+fprintf('\n');
+fprintf('********** Problem Set 6 **********\n');
+fprintf('\n');
 
 load('synapticNoiseData.mat');
 
@@ -647,6 +681,7 @@ legend;
 fprintf('6b ********** \n');
 fprintf('\n');
 fprintf('see figure 6b\n');
+fprintf('\n');
 
 %% **********************************************
 % 6c
@@ -786,6 +821,9 @@ for i = 1:trials
 
 end
 
+title('Figure 6e - Spike Waveforms when Match Filtered');
+xlabel('Time from peak (ms)');
+ylabel('Average Current (pA)');
 
 fprintf('6e ********** \n');
 fprintf('\n');
